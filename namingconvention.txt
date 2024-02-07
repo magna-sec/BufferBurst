@@ -1,5 +1,0 @@
-functions: get_words()
-varibles: first_word
-Classes: CapWords 
-
-File Names: BufferBurst

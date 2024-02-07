@@ -10,6 +10,7 @@ def parse_args():
     parser.add_argument('-t', '--type', metavar='TYPE', type=str, choices=['http', 'socket'], help='Type (http or socket)', required=True)
     parser.add_argument('-P', '--prefix', metavar='PREFIX', type=str, help='Prefix String', required=False)
     parser.add_argument('-f', '--fuzz', metavar='FUZZ', type=int, help='Fuzzing Amount', required=False)
+    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
 
     # Parse the arguments
     args = parser.parse_args()
@@ -17,7 +18,7 @@ def parse_args():
     # Stops "NoneType" errors
     if(args.prefix == None): args.prefix = ""
 
-    target_tuple = namedtuple("target", ["ip", "port", "type", "prefix", "fuzz_amount"])
-    target = target_tuple(args.ip, args.port, args.type, args.prefix, args.fuzz)
+    target_tuple = namedtuple("target", ["ip", "port", "type", "prefix", "fuzz_amount", "verbose"])
+    target = target_tuple(args.ip, args.port, args.type, args.prefix, args.fuzz, args.verbose)
 
     return target

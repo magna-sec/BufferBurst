@@ -41,6 +41,9 @@ def fancy_print(pre_text:str, post_text:str="", msg_type:int=0, endl:str="\n"):
             cprint("[+] ", "white", end="")
             cprint(pre_text, "blue", end="")
 
-    cprint(": ", "white", end="")      
-    cprint(post_text, "yellow", end=endl)
+    if(post_text):
+        cprint(": ", "white", end="")      
+        cprint(post_text, "yellow", end=endl)
+    else:
+        print()
       

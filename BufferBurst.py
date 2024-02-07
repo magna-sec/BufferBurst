@@ -11,9 +11,10 @@ def main():
     # Print the values
     show_target(target.ip, target.port, target.type)
 
-    CreateExploit(target.ip, target.port, target.type, "windbg")
+    new_exploit = CreateExploit(target)
+    new_exploit.start()
 
-    #socket_fuzz(target.ip, target.port, target.fuzz_amount, target.prefix)
+   
 
 if __name__ == "__main__":
     main()

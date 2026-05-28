@@ -14,6 +14,7 @@ class Session:
     prefix: str = ""
     fuzz_amount: int = 100
     verbose: bool = False
+    template: str = ""        # raw HTTP request with * placeholder (empty = socket mode)
     stage: str = "fuzz"
     fuzz_crash_at: int = 0
     offset: int = 0

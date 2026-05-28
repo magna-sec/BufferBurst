@@ -7,6 +7,9 @@ from rich.prompt import Prompt, Confirm
 
 _console = Console()
 
+# Sentinel returned when the user requests a replay
+REPLAY = object()
+
 
 def wait_for_service(ip: str, port: int, timeout: int = 120) -> bool:
     """Poll TCP until the service is reachable again. Shows a spinner."""
@@ -25,19 +28,36 @@ def wait_for_service(ip: str, port: int, timeout: int = 120) -> bool:
     return False
 
 
-def get_eip() -> str:
-    return Prompt.ask("[yellow]\\[?][/] EIP value from debugger [dim](hex, e.g. 64636261)[/]")
+def _hint(text: str) -> str:
+    return f"[dim]({text} — or [bold]r[/] to replay)[/]"
+
+
+def get_eip() -> str | object:
+    """Returns EIP hex string, or REPLAY sentinel."""
+    val = Prompt.ask(f"[yellow]\\[?][/] EIP value from debugger [dim](hex, e.g. 64636261 — or [bold]r[/] to replay)[/]")
+    return REPLAY if val.strip().lower() == "r" else val.strip()
 
 
 def get_jmpesp() -> str:
     return Prompt.ask("[yellow]\\[?][/] JMP ESP address [dim](e.g. 625011af)[/]")
 
 
-def get_bad_bytes_input() -> list[str]:
-    raw = Prompt.ask("[yellow]\\[?][/] Bad bytes found [dim](e.g. 0a 0d) — blank if none[/]")
+def get_bad_bytes_input() -> list[str] | object:
+    """Returns list of bad bytes, empty list if done, or REPLAY sentinel."""
+    raw = Prompt.ask("[yellow]\\[?][/] Bad bytes found [dim](e.g. 0a 0d — blank if done — [bold]r[/] to replay)[/]")
+    if raw.strip().lower() == "r":
+        return REPLAY
     if not raw.strip():
         return []
     return [b.strip().lower().zfill(2) for b in raw.split() if b.strip()]
+
+
+def confirm(message: str) -> bool | object:
+    """Returns True/False, or REPLAY sentinel if user types r."""
+    val = Prompt.ask(f"[yellow]\\[?][/] {message} [dim](y/n — or [bold]r[/] to replay)[/]")
+    if val.strip().lower() == "r":
+        return REPLAY
+    return val.strip().lower() in ("y", "yes")
 
 
 def get_ip() -> str:
@@ -60,10 +80,6 @@ def get_port() -> int:
             _console.print("[red]\\[!][/] Port must be 0–65535.")
         except ValueError:
             _console.print("[red]\\[!][/] Enter a number.")
-
-
-def confirm(message: str) -> bool:
-    return Confirm.ask(f"[yellow]\\[?][/] {message}")
 
 
 def prompt_service_restart():

@@ -16,7 +16,7 @@ def parse_args():
     args = parser.parse_args()
 
     # Stops "NoneType" errors
-    if(args.prefix == None): args.prefix = ""
+    if args.prefix is None: args.prefix = ""
 
     target_tuple = namedtuple("target", ["ip", "port", "type", "prefix", "fuzz_amount", "verbose"])
     target = target_tuple(args.ip, args.port, args.type, args.prefix, args.fuzz, args.verbose)

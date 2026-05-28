@@ -15,15 +15,12 @@ def show_target(ip:str, port:str, trgt_type:str):
     cprint("Port", "blue", end="")
     cprint(": ", "white", end="")
     cprint(port, "yellow")
-    
+
     cprint("Target Type", "blue", end="")
     cprint(": ", "white", end="")
     cprint(trgt_type, "yellow")
 
 def fancy_print(pre_text:str, post_text:str="", msg_type:int=0, endl:str="\n"):
-    """
-    """
-    # CHANGE THESE TO ENUM
     match msg_type:
         case MsgEnums.NORMAL.value:
             cprint("[+] ", "white", end="")
@@ -37,13 +34,12 @@ def fancy_print(pre_text:str, post_text:str="", msg_type:int=0, endl:str="\n"):
         case MsgEnums.QUESTION.value:
             cprint("[?] ", "white", end="")
             cprint(pre_text, "yellow", end="")
-        case default:
+        case _:
             cprint("[+] ", "white", end="")
             cprint(pre_text, "blue", end="")
 
-    if(post_text):
-        cprint(": ", "white", end="")      
+    if post_text:
+        cprint(": ", "white", end="")
         cprint(post_text, "yellow", end=endl)
     else:
-        print()
-      
+        print(end=endl)

@@ -17,12 +17,20 @@ def main():
     existing = Session.load_for(target.ip, target.port)
     session = None
     if existing:
-        _console.print(f"[dim]Session found: [cyan]{target.ip}:{target.port}[/] — stage [bold]{existing.stage}[/][/]")
-        if Confirm.ask("[yellow]\\[?][/] Resume?"):
-            session = existing
-            _console.print(f"[green]\\[+][/] Resuming from stage: [bold]{session.stage}[/]")
+        if existing.stage == "done":
+            _console.print(f"[dim]Exploit already generated for [cyan]{target.ip}:{target.port}[/][/]")
+            if Confirm.ask("[yellow]\\[?][/] Regenerate payload with new LHOST/LPORT (skip to Stage 6)?"):
+                existing.stage = "payload"
+                session = existing
+            else:
+                existing.delete()
         else:
-            existing.delete()
+            _console.print(f"[dim]Session found: [cyan]{target.ip}:{target.port}[/] — stage [bold]{existing.stage}[/][/]")
+            if Confirm.ask("[yellow]\\[?][/] Resume?"):
+                session = existing
+                _console.print(f"[green]\\[+][/] Resuming from stage: [bold]{session.stage}[/]")
+            else:
+                existing.delete()
 
     exploit = CreateExploit(target, DEBUGGERS[target.debugger], session=session)
     exploit.start()

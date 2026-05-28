@@ -64,3 +64,9 @@ def get_port() -> int:
 
 def confirm(message: str) -> bool:
     return Confirm.ask(f"[yellow]\\[?][/] {message}")
+
+
+def prompt_service_restart():
+    """Ask the user to restart the service manually and wait for them to confirm."""
+    _console.print("[yellow]\\[?][/] Restart the service / relaunch in your debugger, then press Enter to continue...", end="")
+    input()

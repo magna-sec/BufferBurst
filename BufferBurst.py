@@ -5,7 +5,7 @@ from Utils.FancyPrint import show_target
 from Utils.Usage import parse_args
 from Utils.CreateExploit import CreateExploit
 from Utils.Session import Session
-from Templates.Debuggers import windbg_bof
+from Templates.Debuggers import DEBUGGERS
 
 _console = Console()
 
@@ -22,7 +22,7 @@ def main():
         else:
             Session.delete()
 
-    exploit = CreateExploit(target, windbg_bof, session=session)
+    exploit = CreateExploit(target, DEBUGGERS[target.debugger], session=session)
     exploit.start()
 
 

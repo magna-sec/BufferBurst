@@ -10,6 +10,7 @@ def parse_args():
     parser.add_argument('-T', '--template', metavar='TEMPLATE', type=str, required=False, help='Path to HTTP request template (required for --type http). Use * as the payload placeholder.')
     parser.add_argument('-P', '--prefix',   metavar='PREFIX',   type=str, required=False, help='Socket prefix string prepended to each send')
     parser.add_argument('-f', '--fuzz',     metavar='FUZZ',     type=int, required=False, help='Bytes to increment per fuzz step (default 100)')
+    parser.add_argument('-d', '--debugger', metavar='DEBUGGER', type=str, default='windbg', choices=['windbg'], help='Debugger to use (default: windbg)')
     parser.add_argument('-v', '--verbose',  action='store_true',          help='Verbose output')
 
     args = parser.parse_args()
@@ -30,5 +31,5 @@ def parse_args():
     if args.prefix is None:
         args.prefix = ""
 
-    Target = namedtuple("target", ["ip", "port", "type", "prefix", "fuzz_amount", "verbose", "template"])
-    return Target(args.ip, args.port, args.type, args.prefix, args.fuzz, args.verbose, template_content)
+    Target = namedtuple("target", ["ip", "port", "type", "prefix", "fuzz_amount", "verbose", "template", "debugger"])
+    return Target(args.ip, args.port, args.type, args.prefix, args.fuzz, args.verbose, template_content, args.debugger)

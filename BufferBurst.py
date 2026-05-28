@@ -1,18 +1,30 @@
+from rich.console import Console
+from rich.prompt import Confirm
 
-from Utils.FancyPrint import fancy_print, show_target
-from Utils.MsgEnums import MsgEnums
+from Utils.FancyPrint import show_target
 from Utils.Usage import parse_args
-from Utils.SocketFuzzer import socket_fuzz
 from Utils.CreateExploit import CreateExploit
-
+from Utils.Session import Session
 from Templates.Debuggers import windbg_bof
+
+_console = Console()
+
 
 def main():
     target = parse_args()
     show_target(target.ip, target.port, target.type)
 
-    new_exploit = CreateExploit(target, windbg_bof)
-    new_exploit.start()
+    session = None
+    if Session.exists():
+        if Confirm.ask("[yellow]\\[?][/] Existing session found — resume?"):
+            session = Session.load()
+            _console.print(f"[green]\\[+][/] Resuming from stage: [bold]{session.stage}[/]")
+        else:
+            Session.delete()
+
+    exploit = CreateExploit(target, windbg_bof, session=session)
+    exploit.start()
+
 
 if __name__ == "__main__":
     main()

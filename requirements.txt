@@ -1,4 +1,1 @@
-termcolor
-argparse
-simple_term_menu
-ipaddress
+rich

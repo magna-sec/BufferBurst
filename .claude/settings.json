@@ -4,7 +4,8 @@
       "Bash(python -c ' *)",
       "Bash(pip install *)",
       "Bash(python -c \"from Utils.FancyPrint import print_jmpesp_steps; print_jmpesp_steps\\('WinDbg'\\)\")",
-      "Read(//c/Users/consultant/Desktop/**)"
+      "Read(//c/Users/consultant/Desktop/**)",
+      "Bash(del test_exploit_preview.py)"
     ]
   }
 }

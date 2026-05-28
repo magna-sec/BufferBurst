@@ -73,10 +73,11 @@ def socket_fuzz(ip: str, port: int, fuzz_amount: int, prefix: str, template: str
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     s.settimeout(5)
                     s.connect((ip, port))
-                    s.recv(1024)
+                    if not template:
+                        s.recv(1024)  # consume socket server banner (e.g. vulnserver)
                     progress.update(task, description=f"{amount} bytes")
                     s.send(bytes(payload, "latin-1"))
-                    s.recv(1024)
+                    s.recv(4096 if template else 1024)
             except OSError:
                 _console.print(f"[green]\\[I][/] Crashed at [yellow]{amount}[/] bytes")
                 return amount

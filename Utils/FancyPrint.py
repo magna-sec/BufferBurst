@@ -1,6 +1,7 @@
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+from rich.text import Text
 from rich import box
 
 _console = Console()
@@ -34,6 +35,23 @@ def print_warning(message: str):
 
 def print_success(message: str):
     _console.print(f"[bold green]\\[+][/] {message}")
+
+
+def print_jmpesp_steps(debugger_name: str):
+    steps = (
+        f"[bold white]In {debugger_name}:[/]\n\n"
+        f"  [bold]1.[/] List all loaded modules:\n"
+        f"     [bold cyan]lm[/]\n\n"
+        f"  [bold]2.[/] For each module, search for [bold]JMP ESP[/] ([cyan]FF E4[/]):\n"
+        f"     [bold cyan]s -b <start_addr> <end_addr> 0xFF 0xE4[/]\n\n"
+        f"  [bold]Example[/] — if [cyan]lm[/] shows:\n"
+        f"     [dim]62500000 62508000   essfunc    (deferred)[/]\n"
+        f"  Run:\n"
+        f"     [bold cyan]s -b 62500000 62508000 0xFF 0xE4[/]\n\n"
+        f"  Any addresses returned are JMP ESP candidates.\n"
+        f"  [dim]Prefer modules without ASLR / SafeSEH (no rebase flag in lm output).[/]"
+    )
+    _console.print(Panel(steps, border_style="cyan", padding=(1, 2)))
 
 
 def show_bad_bytes_grid(bad_bytes: list[str], remaining: str):

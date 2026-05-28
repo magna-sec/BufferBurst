@@ -10,22 +10,44 @@ from Utils.Pattern import cyclic
 _console = Console()
 
 
+def _apply_template(template: str, data: str) -> str:
+    """
+    Substitute the fuzz payload into the template.
+    POST: replaces * in the body (avoids */* wildcards in Accept headers).
+    GET:  replaces * in the request line only.
+    Content-Length is recalculated after substitution.
+    """
+    sep = "\r\n\r\n"
+    if sep not in template:
+        return template.replace("*", data, 1)
+
+    headers, body = template.split(sep, 1)
+
+    if "*" in body:
+        # POST-style: payload is in the body
+        new_body = body.replace("*", data, 1)
+        new_headers = headers
+    else:
+        # GET-style: payload is in the request line (first header line)
+        lines = headers.split("\r\n")
+        lines[0] = lines[0].replace("*", data, 1)
+        new_headers = "\r\n".join(lines)
+        new_body = body
+
+    # Recalculate Content-Length for requests that carry a body
+    new_headers = re.sub(
+        r"(Content-Length\s*:\s*)\d+",
+        lambda m: m.group(1) + str(len(new_body.encode("latin-1"))),
+        new_headers,
+        flags=re.IGNORECASE,
+    )
+
+    return new_headers + sep + new_body
+
+
 def _build_payload(data: str, prefix: str, template: str) -> str:
     if template:
-        result = template.replace("*", data, 1)
-        # Auto-update Content-Length after substitution
-        sep = "\r\n\r\n"
-        if sep in result:
-            headers, body = result.split(sep, 1)
-            body_len = len(body.encode("latin-1"))
-            headers = re.sub(
-                r"(Content-Length\s*:\s*)\d+",
-                lambda m: m.group(1) + str(body_len),
-                headers,
-                flags=re.IGNORECASE,
-            )
-            result = headers + sep + body
-        return result
+        return _apply_template(template, data)
     return prefix + data
 
 

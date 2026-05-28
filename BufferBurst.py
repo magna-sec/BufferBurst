@@ -14,13 +14,15 @@ def main():
     target = parse_args()
     show_target(target.ip, target.port, target.type)
 
+    existing = Session.load_for(target.ip, target.port)
     session = None
-    if Session.exists():
-        if Confirm.ask("[yellow]\\[?][/] Existing session found — resume?"):
-            session = Session.load()
+    if existing:
+        _console.print(f"[dim]Session found: [cyan]{target.ip}:{target.port}[/] — stage [bold]{existing.stage}[/][/]")
+        if Confirm.ask("[yellow]\\[?][/] Resume?"):
+            session = existing
             _console.print(f"[green]\\[+][/] Resuming from stage: [bold]{session.stage}[/]")
         else:
-            Session.delete()
+            existing.delete()
 
     exploit = CreateExploit(target, DEBUGGERS[target.debugger], session=session)
     exploit.start()

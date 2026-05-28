@@ -3,7 +3,11 @@ import os
 from dataclasses import dataclass, field, asdict
 from typing import List
 
-_SESSION_FILE = "session.json"
+_SESSIONS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "sessions")
+
+
+def _session_path(ip: str, port: int) -> str:
+    return os.path.join(_SESSIONS_DIR, f"{ip}_{port}.json")
 
 
 @dataclass
@@ -23,19 +27,25 @@ class Session:
     eip_value_clean: str = ""
 
     def save(self):
-        with open(_SESSION_FILE, "w", encoding="utf-8") as f:
+        os.makedirs(_SESSIONS_DIR, exist_ok=True)
+        with open(_session_path(self.ip, self.port), "w", encoding="utf-8") as f:
             json.dump(asdict(self), f, indent=2, ensure_ascii=False)
 
+    def delete(self):
+        path = _session_path(self.ip, self.port)
+        if os.path.exists(path):
+            os.remove(path)
+
     @classmethod
-    def load(cls) -> "Session":
-        with open(_SESSION_FILE, "r", encoding="utf-8") as f:
+    def load_for(cls, ip: str, port: int) -> "Session | None":
+        path = _session_path(ip, port)
+        if not os.path.exists(path):
+            return None
+        with open(path, "r", encoding="utf-8") as f:
             return cls(**json.load(f))
 
     @classmethod
-    def exists(cls) -> bool:
-        return os.path.exists(_SESSION_FILE)
-
-    @classmethod
-    def delete(cls):
-        if os.path.exists(_SESSION_FILE):
-            os.remove(_SESSION_FILE)
+    def list_all(cls) -> list[str]:
+        if not os.path.exists(_SESSIONS_DIR):
+            return []
+        return [f for f in os.listdir(_SESSIONS_DIR) if f.endswith(".json")]
